@@ -76,11 +76,8 @@ namespace {
             double scaleFactor = (magnitude - (double)deadzone)/magnitude;
 
             double den = (double)(32767-deadzone);
-            double tmp;
-            tmp = (x*scaleFactor)/den;
-            *outX = tmp * tmp;
-            tmp = (y*scaleFactor)/den;
-            *outY = tmp * tmp;
+            *outX = (x*scaleFactor)/den;
+            *outY = (y*scaleFactor)/den;
             return;
         }
 
