@@ -118,6 +118,17 @@ XboxController::XboxController(DWORD id) :
 
 
 /**************************************************************************
+ * connected()
+ *
+ * Returns: True if the controller is connected, false otherwise.
+ *************************************************************************/
+bool XboxController::connected(void)
+{
+    return controllerConnected;
+}
+
+
+/**************************************************************************
  * periodic()
  *
  * This function must be called regularly to poll the state of the controller.

@@ -51,6 +51,7 @@ class XboxController
 {
 public:
     XboxController(DWORD);
+    bool connected(void);
     void periodic(void);
     bool getState(InputStateT *);
 
