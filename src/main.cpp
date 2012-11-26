@@ -1,11 +1,11 @@
 // hexapod_input.cpp : Defines the entry point for the console application.
 //
 
+#include <Windows.h>
 #include <cstdio>
-#include "XboxController.h"
-#include "HexInputInterface.h"
+#include "HexXboxInput.h"
 
-using namespace khameleon;
+using namespace khameleon::hexapod;
 
 double length(double x, double y)
 {
@@ -14,6 +14,20 @@ double length(double x, double y)
 
 int main(int argc, char* argv[])
 {
+    HexXboxInput hexController;
+
+    while (true) {
+        HexInputT input;
+        hexController.periodic();
+        hexController.getInput(&input);
+
+        std::printf("radius (%f), crabAngle (%f), speed (%f)\n", input.radius,
+            input.crabAngle, input.speed);
+
+        Sleep(100);
+    }
+
+#if 0
     XboxController *tmp[4];
 
     tmp[0] = new XboxController(0);
@@ -34,7 +48,7 @@ int main(int argc, char* argv[])
             }
         }
     }
-
+#endif
 	return 0;
 }
 

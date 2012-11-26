@@ -32,6 +32,7 @@ public:
     void getInput(HexInputT *);
 
 private:
+    boost::shared_ptr<XboxController> currentController;
     ControllerVecT controllers;
 };
 
