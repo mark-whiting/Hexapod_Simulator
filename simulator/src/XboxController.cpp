@@ -14,6 +14,7 @@
 
 #include <cassert>
 #include <cmath>
+#include <algorithm>
 #include "XboxController.h"
 
 using namespace boost::chrono;
@@ -37,7 +38,7 @@ namespace {
         BYTE deadzone=XINPUT_GAMEPAD_TRIGGER_THRESHOLD)
     {
         if (triggerVal > deadzone) {
-            /* Normalize input in the range deadzone-255 to 0-1 */
+            /* Normalize input in the range deadzone-255 to 0.0-1.0 */
             double num = (double)(triggerVal - deadzone);
             double den = (double)(255 - deadzone);
             *outVal = (num/den);
@@ -63,24 +64,39 @@ namespace {
      *************************************************************************/
     void calcThumbstickDeadzone(SHORT inX, SHORT inY, double *outX, double *outY, SHORT deadzone)
     {
-        double x = (double) inX;
-        double y = (double) inY;
+        /* The thumbsticks range is -32768-32767, we clamp that to the range
+         * -32767-32767.
+         */
+        double x = (double) std::max<SHORT>(inX, -32767);
+        double y = (double) std::max<SHORT>(inY, -32767);
 
+        /* If the magnitude is greater than the deadzone, we scale the range
+         * deadzone - magnitude to the range 0.0 - 1.0.
+         */
         double magnitude = std::sqrt((x*x)+(y*y));
-        if (magnitude > 32767) {
-            magnitude = 32767;
-        }
-
         if (magnitude > (double)deadzone) {
-            /* scale inputs in the range deadzone-65535 to 0-1 */
             double scaleFactor = (magnitude - (double)deadzone)/magnitude;
-
             double den = (double)(32767-deadzone);
-            *outX = (x*scaleFactor)/den;
-            *outY = (y*scaleFactor)/den;
+            double tmpX = (x*scaleFactor)/den;
+            double tmpY = (y*scaleFactor)/den;
+
+            /* The sticks of the Xbox controller are mechanically limited to
+             * roughly a circle but it's not perfect, so in the corner where
+             * the magnitude might go above 1.0, we clamp it.
+             */
+            double tmpMag = std::sqrt((tmpX*tmpX)+(tmpY*tmpY));
+            if (tmpMag > 1.0) {
+                tmpX = tmpX / tmpMag;
+                tmpY = tmpY / tmpMag;
+            }
+
+            /* Assign the outputs */
+            *outX = tmpX;
+            *outY = tmpY;
             return;
         }
 
+        /* The stick is still within the deadzone so just return 0 */
         *outX = 0.0;
         *outY = 0.0;
         return;

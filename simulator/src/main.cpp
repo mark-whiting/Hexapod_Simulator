@@ -5,6 +5,7 @@
 #include <cstdio>
 #include "HexXboxInput.h"
 
+using namespace khameleon;
 using namespace khameleon::hexapod;
 
 double length(double x, double y)
@@ -24,7 +25,7 @@ int main(int argc, char* argv[])
         std::printf("radius (%f), crabAngle (%f), speed (%f)\n", input.radius,
             input.crabAngle, input.speed);
 
-        Sleep(100);
+        Sleep(50);
     }
 
 #if 0
@@ -47,6 +48,8 @@ int main(int argc, char* argv[])
                     length(input.rightThumbX, input.rightThumbY));
             }
         }
+
+        Sleep(50);
     }
 #endif
 	return 0;
